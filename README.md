@@ -11,16 +11,6 @@ Below is an overview of the services defined in our `docker-compose.yml`:
 | backup  | A service for running backup scripts. It executes once and exits. | mbround18/backup-utility:latest | INPUT_FOLDER, OUTPUT_FOLDER, OUTPUT_USER, OUTPUT_GROUP |
 | cron    | A service for running backup that can run on a cron.              | mbround18/backup-cron:latest    | INPUT_FOLDER, OUTPUT_FOLDER, OUTPUT_USER, OUTPUT_GROUP |
 
-### Supported Environment Variables
-
-| Variable        | Description                                                          | Default Value |
-| --------------- | -------------------------------------------------------------------- | ------------- |
-| `INPUT_FOLDER`  | The folder to back up from.                                          | None          |
-| `OUTPUT_FOLDER` | The destination folder for backups.                                  | None          |
-| `OUTPUT_USER`   | UID for the output files.                                            | `1000`        |
-| `OUTPUT_GROUP`  | GID for the output files.                                            | `1000`        |
-| `SCHEDULE`      | The cron schedule for the backup. (Only used by the `cron` service.) | `0 * * * *`   |
-
 ## Getting Started 🚀
 
 To get started with this Docker Compose project, ensure you have Docker and Docker Compose installed on your system.
@@ -69,10 +59,15 @@ To get started with this Docker Compose project, ensure you have Docker and Dock
 
 To customize the backup service, you can modify the environment variables in the `docker-compose.yml` file. Here's a brief on what each variable does:
 
-- `INPUT_FOLDER`: The folder to back up from. (Required)
-- `OUTPUT_FOLDER`: The destination folder for backups. (Required)
-- `OUTPUT_USER`: UID for the output files. (Optional, defaults to `1000`)
-- `OUTPUT_GROUP`: GID for the output files. (Optional, defaults to `1000`)
+| Variable         | Description                                                                                   | Default Value |
+| ---------------- | --------------------------------------------------------------------------------------------- | ------------- |
+| `INPUT_FOLDER`   | The folder to back up from.                                                                   | None          |
+| `OUTPUT_FOLDER`  | The destination folder for backups.                                                           | None          |
+| `OUTPUT_USER`    | UID for the output files.                                                                     | `1000`        |
+| `OUTPUT_GROUP`   | GID for the output files.                                                                     | `1000`        |
+| `SCHEDULE`       | The cron schedule for the backup. (Only used by the `cron` service.)                          | `0 * * * *`   |
+| `RETAIN_N_DAYS`  | The number of days to retain backups. (Only used by the `cron` service. `0` means disabled.)  | `0`           |
+| `RETAIN_N_FILES` | The number of files to retain backups. (Only used by the `cron` service. `0` means disabled.) | `0`           |
 
 Feel free to explore the `docker-compose.yml` for additional configurations and services.
 
