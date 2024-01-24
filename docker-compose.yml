@@ -1,0 +1,35 @@
+services:
+  backup:
+    # This is the backup script container that will run once and exit
+    image: mbround18/backup-utility:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: script
+    environment:
+      INPUT_FOLDER: /saves # Required, no default
+      OUTPUT_FOLDER: /backups # Required, no default
+      OUTPUT_USER: 1000 # Optional, defaults to 0
+      OUTPUT_GROUP: 1000 # Optional, defaults to 0
+      # KEEP_N_FILES: 5 # Optional, Number of files to keep with no time limit
+      # KEEP_N_DAYS: 5 # Optional, Number of days to keep. Files older than this will be deleted.
+
+    volumes:
+      - ./tmp/input:/saves
+      - ./tmp/output:/backups
+  cron:
+    # This is a cron container that will run the backup script on a schedule
+    image: mbround18/backup-cron:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: cron
+    environment:
+      SCHEDULE: "* * * * *"
+      INPUT_FOLDER: /saves
+      OUTPUT_FOLDER: /backups
+      OUTPUT_USER: 1000
+      OUTPUT_GROUP: 1000
+    volumes:
+      - ./tmp/input:/saves
+      - ./tmp/output:/backups
