@@ -47,7 +47,6 @@ services:
       - ./input:/input
       - ./output:/output
     restart: unless-stopped
-    command: ["0", "0", "*", "*", "*", "backup"]
 ```
 
 ### Contributing
