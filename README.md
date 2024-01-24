@@ -11,6 +11,17 @@ Below is an overview of the services defined in our `docker-compose.yml`:
 | backup  | A service for running backup scripts. It executes once and exits. | mbround18/backup-utility:latest | INPUT_FOLDER, OUTPUT_FOLDER, OUTPUT_USER, OUTPUT_GROUP |
 | cron    | A service for running backup that can run on a cron.              | mbround18/backup-cron:latest    | INPUT_FOLDER, OUTPUT_FOLDER, OUTPUT_USER, OUTPUT_GROUP |
 
+### Supported Environment Variables
+
+| Variable        | Description                                                                 | Default Value |
+| --------------- | --------------------------------------------------------------------------- | ------------- |
+| `INPUT_FOLDER`  | The folder to back up from.                                                 | None          |
+| `OUTPUT_FOLDER` | The destination folder for backups.                                          | None          |
+| `OUTPUT_USER`   | UID for the output files.                                                    | `1000`        |
+| `OUTPUT_GROUP`  | GID for the output files.                                                    | `1000`        |
+| `SCHEDULE`      | The cron schedule for the backup. (Only used by the `cron` service.)         | None          |
+
+
 ## Getting Started 🚀
 
 To get started with this Docker Compose project, ensure you have Docker and Docker Compose installed on your system.
@@ -29,6 +40,7 @@ services:
   cron:
     image: mbround18/backup-cron:latest
     environment:
+      - SCHEDULE=0 0 * * *
       - INPUT_FOLDER=/input
       - OUTPUT_FOLDER=/output
     volumes:
