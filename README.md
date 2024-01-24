@@ -13,14 +13,13 @@ Below is an overview of the services defined in our `docker-compose.yml`:
 
 ### Supported Environment Variables
 
-| Variable        | Description                                                                 | Default Value |
-| --------------- | --------------------------------------------------------------------------- |---------------|
-| `INPUT_FOLDER`  | The folder to back up from.                                                 | None          |
-| `OUTPUT_FOLDER` | The destination folder for backups.                                          | None          |
-| `OUTPUT_USER`   | UID for the output files.                                                    | `1000`        |
-| `OUTPUT_GROUP`  | GID for the output files.                                                    | `1000`        |
-| `SCHEDULE`      | The cron schedule for the backup. (Only used by the `cron` service.)         | `* * * * *`   |
-
+| Variable        | Description                                                          | Default Value |
+| --------------- | -------------------------------------------------------------------- | ------------- |
+| `INPUT_FOLDER`  | The folder to back up from.                                          | None          |
+| `OUTPUT_FOLDER` | The destination folder for backups.                                  | None          |
+| `OUTPUT_USER`   | UID for the output files.                                            | `1000`        |
+| `OUTPUT_GROUP`  | GID for the output files.                                            | `1000`        |
+| `SCHEDULE`      | The cron schedule for the backup. (Only used by the `cron` service.) | `0 * * * *`   |
 
 ## Getting Started 🚀
 

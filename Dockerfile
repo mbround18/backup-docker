@@ -18,7 +18,7 @@ FROM base as script
 # Define the SCHEDULE environment variable (default is every minute as an example)
 ENV INPUT_FOLDER="/app/input"
 ENV OUTPUT_FOLDER="/app/output"
-ENV SCHEDULE="* * * * *"
+ENV SCHEDULE="0 * * * *"
 
 # Use the startup script as the entry point
 ENTRYPOINT ["python"]
