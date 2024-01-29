@@ -70,7 +70,7 @@ def get_file_list(folder_path):
         key=lambda x: os.path.getmtime(os.path.join(folder_path, x)),
     )
     if files and os.path.getmtime(
-            os.path.join(folder_path, files[0])
+        os.path.join(folder_path, files[0])
     ) > os.path.getmtime(os.path.join(folder_path, files[-1])):
         files = files[::-1]
 
@@ -87,7 +87,7 @@ def get_files_to_delete_by_days(folder_path, keep_n_days):
         f
         for f in files
         if datetime.fromtimestamp(os.path.getmtime(os.path.join(folder_path, f)))
-           < cutoff_date
+        < cutoff_date
     ]
 
 
@@ -102,6 +102,7 @@ def get_files_to_delete_by_count(folder_path, keep_n_files):
 
     # return files but without files to keep
     return [f for f in files if f not in files_to_keep]
+
 
 def adjust_file_retention(folder_path, keep_n_files=None, keep_n_days=None):
     """
@@ -138,13 +139,13 @@ def adjust_file_retention(folder_path, keep_n_files=None, keep_n_days=None):
 
 
 def zip_folder(
-        source,
-        destination,
-        owner,
-        group,
-        keep_n_days,
-        keep_n_files,
-        timestamp_format="%Y%m%d_%H%M%S",
+    source,
+    destination,
+    owner,
+    group,
+    keep_n_days,
+    keep_n_files,
+    timestamp_format="%Y%m%d_%H%M%S",
 ):
     """
     Zips the input folder and saves it to the output folder with a timestamp.
