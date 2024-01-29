@@ -30,7 +30,7 @@ services:
       OUTPUT_FOLDER: /backups
       OUTPUT_USER: 1000
       OUTPUT_GROUP: 1000
-      DRY_RUN: "true" # Optional, defaults to false
+      DRY_RUN: "false" # Optional, defaults to false
       KEEP_N_FILES: 5 # Optional, Number of files to keep with no time limit
       KEEP_N_DAYS: 0 # Optional, Number of days to keep. Files older than this will be deleted.
     volumes:
