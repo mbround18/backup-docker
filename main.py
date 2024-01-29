@@ -5,9 +5,11 @@ import pwd
 import grp
 from datetime import datetime, timedelta
 
+
 def is_dry_run():
     """Check if the script is running in dry run mode."""
     return os.getenv("DRY_RUN", False) == "true"
+
 
 def is_folder_empty(folder_path):
     """
@@ -73,16 +75,35 @@ def adjust_file_retention(folder_path, keep_n_files=None, keep_n_days=None):
         print(f"keep_n_days: {keep_n_days}")
 
     files_to_delete = []
-    files = sorted(os.listdir(folder_path), key=lambda x: os.path.getmtime(os.path.join(folder_path, x)))
+    files = sorted(
+        os.listdir(folder_path),
+        key=lambda x: os.path.getmtime(os.path.join(folder_path, x)),
+    )
+
+    # validate the last and first file is sorted correctly otherwise reverse the list
+    if files and os.path.getmtime(
+        os.path.join(folder_path, files[0])
+    ) > os.path.getmtime(os.path.join(folder_path, files[-1])):
+        files = files[::-1]
+
     if keep_n_files is not None:
-        # Keep only the newest n files
-        files_to_delete = files[:-keep_n_files]
+        files_to_keep = files[-keep_n_files:]
+
+        # Removes files to keep from files
+        for f in files_to_keep:
+            files.remove(f)
+
+        files_to_delete = files
 
     if keep_n_days is not None:
         # Delete files older than y days
         cutoff_date = datetime.now() - timedelta(days=keep_n_days)
-        files_to_delete = [f for f in files if
-                           datetime.fromtimestamp(os.path.getmtime(os.path.join(folder_path, f))) < cutoff_date]
+        files_to_delete = [
+            f
+            for f in files
+            if datetime.fromtimestamp(os.path.getmtime(os.path.join(folder_path, f)))
+            < cutoff_date
+        ]
 
     # Example deletion logic
     for f in files_to_delete:
@@ -96,13 +117,13 @@ def adjust_file_retention(folder_path, keep_n_files=None, keep_n_days=None):
 
 
 def zip_folder(
-        source,
-        destination,
-        owner,
-        group,
-        keep_n_days,
-        keep_n_files,
-        timestamp_format="%Y%m%d_%H%M%S"
+    source,
+    destination,
+    owner,
+    group,
+    keep_n_days,
+    keep_n_files,
+    timestamp_format="%Y%m%d_%H%M%S",
 ):
     """
     Zips the input folder and saves it to the output folder with a timestamp.
