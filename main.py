@@ -61,6 +61,48 @@ def humanize_bytes(bytes, precision=2):
     return f"{bytes / factor:.{precision}f} {suffix}"
 
 
+def get_file_list(folder_path):
+    """
+    Get a list of files in a folder sorted by modification time.
+    """
+    files = sorted(
+        os.listdir(folder_path),
+        key=lambda x: os.path.getmtime(os.path.join(folder_path, x)),
+    )
+    if files and os.path.getmtime(
+            os.path.join(folder_path, files[0])
+    ) > os.path.getmtime(os.path.join(folder_path, files[-1])):
+        files = files[::-1]
+
+    return files
+
+
+def get_files_to_delete_by_days(folder_path, keep_n_days):
+    """
+    Get a list of files to delete based on the number of days to keep.
+    """
+    cutoff_date = datetime.now() - timedelta(days=keep_n_days)
+    files = get_file_list(folder_path)
+    return [
+        f
+        for f in files
+        if datetime.fromtimestamp(os.path.getmtime(os.path.join(folder_path, f)))
+           < cutoff_date
+    ]
+
+
+def get_files_to_delete_by_count(folder_path, keep_n_files):
+    """
+    Get a list of files to delete based on the number of files to keep.
+    """
+    files = get_file_list(folder_path)
+    files_to_keep = files[-keep_n_files:]
+
+    print(f"Files to keep: {files_to_keep}")
+
+    # return files but without files to keep
+    return [f for f in files if f not in files_to_keep]
+
 def adjust_file_retention(folder_path, keep_n_files=None, keep_n_days=None):
     """
     Adjust the number of files in a folder by deleting the oldest files.
@@ -75,35 +117,14 @@ def adjust_file_retention(folder_path, keep_n_files=None, keep_n_days=None):
         print(f"keep_n_days: {keep_n_days}")
 
     files_to_delete = []
-    files = sorted(
-        os.listdir(folder_path),
-        key=lambda x: os.path.getmtime(os.path.join(folder_path, x)),
-    )
+    if keep_n_files is not None and keep_n_files > 0:
+        files_to_delete.extend(get_files_to_delete_by_count(folder_path, keep_n_files))
 
-    # validate the last and first file is sorted correctly otherwise reverse the list
-    if files and os.path.getmtime(
-        os.path.join(folder_path, files[0])
-    ) > os.path.getmtime(os.path.join(folder_path, files[-1])):
-        files = files[::-1]
+    if keep_n_days is not None and keep_n_days > 0:
+        files_to_delete.extend(get_files_to_delete_by_days(folder_path, keep_n_days))
 
-    if keep_n_files is not None:
-        files_to_keep = files[-keep_n_files:]
-
-        # Removes files to keep from files
-        for f in files_to_keep:
-            files.remove(f)
-
-        files_to_delete = files
-
-    if keep_n_days is not None:
-        # Delete files older than y days
-        cutoff_date = datetime.now() - timedelta(days=keep_n_days)
-        files_to_delete = [
-            f
-            for f in files
-            if datetime.fromtimestamp(os.path.getmtime(os.path.join(folder_path, f)))
-            < cutoff_date
-        ]
+    # only keep unique
+    files_to_delete = list(set(files_to_delete))
 
     # Example deletion logic
     for f in files_to_delete:
@@ -117,13 +138,13 @@ def adjust_file_retention(folder_path, keep_n_files=None, keep_n_days=None):
 
 
 def zip_folder(
-    source,
-    destination,
-    owner,
-    group,
-    keep_n_days,
-    keep_n_files,
-    timestamp_format="%Y%m%d_%H%M%S",
+        source,
+        destination,
+        owner,
+        group,
+        keep_n_days,
+        keep_n_files,
+        timestamp_format="%Y%m%d_%H%M%S",
 ):
     """
     Zips the input folder and saves it to the output folder with a timestamp.
@@ -199,7 +220,7 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--keep-n-days",
-        type=int,
+        type=float,
         default=os.getenv("KEEP_N_DAYS", 0),
         help="The number of days to keep the zip file. Defaults to 0 (no limit).",
     )
