@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 
 # Replace the cron schedule placeholder with the actual SCHEDULE environment variable
-CRON_COMMAND=""
+CRON_COMMAND="DRY_RUN=${DRY_RUN:-"false"}"
 CRON_COMMAND+=" INPUT_FOLDER=${INPUT_FOLDER}"
 CRON_COMMAND+=" OUTPUT_FOLDER=${OUTPUT_FOLDER}"
 CRON_COMMAND+=" OUTPUT_USER=${OUTPUT_USER:-"root"}"
 CRON_COMMAND+=" OUTPUT_GROUP=${OUTPUT_GROUP:-"root"}"
+CRON_COMMAND+=" KEEP_N_DAYS=${KEEP_N_DAYS:-"0"}"
+CRON_COMMAND+=" KEEP_N_FILES=${KEEP_N_FILES:-"0"}"
 CRON_COMMAND+=" /usr/local/bin/python /app/main.py"
 
 echo "------------------------------------------------------------------"
@@ -43,4 +45,6 @@ trap cleanup INT EXIT
 
 # Start the cron daemon and display logs
 cron -f &
+echo "Running Initial Backup..."
+eval "${CRON_COMMAND}" >> /var/log/cron.log 2>&1
 tail -f /var/log/cron.log

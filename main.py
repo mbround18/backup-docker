@@ -5,6 +5,9 @@ import pwd
 import grp
 from datetime import datetime, timedelta
 
+def is_dry_run():
+    """Check if the script is running in dry run mode."""
+    return os.getenv("DRY_RUN", False) == "true"
 
 def is_folder_empty(folder_path):
     """
@@ -56,29 +59,40 @@ def humanize_bytes(bytes, precision=2):
     return f"{bytes / factor:.{precision}f} {suffix}"
 
 
-def adjust_file_retention(folder_path, keep_n_files=None, keep_y_days=None):
+def adjust_file_retention(folder_path, keep_n_files=None, keep_n_days=None):
     """
     Adjust the number of files in a folder by deleting the oldest files.
     :param folder_path:
     :param keep_n_files:
-    :param keep_y_days:
+    :param keep_n_days:
     :return:
     """
+    if is_dry_run():
+        print(f"Adjusting file retention for {folder_path}...")
+        print(f"keep_n_files: {keep_n_files}")
+        print(f"keep_n_days: {keep_n_days}")
+
     files_to_delete = []
     files = sorted(os.listdir(folder_path), key=lambda x: os.path.getmtime(os.path.join(folder_path, x)))
     if keep_n_files is not None:
         # Keep only the newest n files
         files_to_delete = files[:-keep_n_files]
-    elif keep_y_days is not None:
+
+    if keep_n_days is not None:
         # Delete files older than y days
-        cutoff_date = datetime.now() - timedelta(days=keep_y_days)
+        cutoff_date = datetime.now() - timedelta(days=keep_n_days)
         files_to_delete = [f for f in files if
                            datetime.fromtimestamp(os.path.getmtime(os.path.join(folder_path, f))) < cutoff_date]
 
     # Example deletion logic
     for f in files_to_delete:
-        os.remove(os.path.join(folder_path, f))
-        print(f"Deleted {f}")
+        # if env DRY_RUN is true
+        if is_dry_run():
+            print(f"Would delete {f}")
+            continue
+        else:
+            os.remove(os.path.join(folder_path, f))
+            print(f"Deleted {f}")
 
 
 def zip_folder(
@@ -121,7 +135,7 @@ def zip_folder(
                 file_path = os.path.join(root, file)
                 arcname = os.path.relpath(file_path, start=source)
                 zipf.write(file_path, arcname)
-    # get size of zip
+    # get the size of zip
     size = os.path.getsize(zip_filepath)
     # humanize the size
 
