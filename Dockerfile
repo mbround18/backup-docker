@@ -10,7 +10,7 @@ WORKDIR /app
 COPY . /app
 
 # Install dependencies using Pipenv
-RUN pipenv install --deploy --ignore-pipfile
+RUN pipenv --python /usr/local/bin/python3 install --deploy --ignore-pipfile
 
 # Use the official Python base image
 FROM base as script
