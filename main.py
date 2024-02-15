@@ -180,6 +180,13 @@ def zip_folder(
                 zipf.write(file_path, arcname)
     # get the size of zip
     size = os.path.getsize(zip_filepath)
+
+    # Remove the zip file if it's empty and return
+    if size == 0:
+        os.remove(zip_filepath)
+        print(f"Zip file {zip_filepath} is empty and was removed.")
+        return
+
     # humanize the size
 
     print(
