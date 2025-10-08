@@ -1,4 +1,4 @@
-FROM python:3.12-slim as base
+FROM python:3.14-slim as base
 
 # Install cron and Pipenv
 RUN apt-get update && apt-get install -y cron procps && pip install pipenv
